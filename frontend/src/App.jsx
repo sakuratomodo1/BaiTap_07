@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { Cart } from 'shopping-cart-lib-luc-thoi-trong';
+import { Cart } from 'big-boss-cart-uikit';
 import ProductList from './components/ProductList';
 import { GET_CART, REMOVE_ITEM, UPDATE_QTY, CHECKOUT } from './graphql/operations';
 
@@ -16,7 +16,6 @@ function App() {
     const [checkout] = useMutation(CHECKOUT);
 
     // --- LOGIC TÍNH TOÁN ---
-    // Tính tổng số lượng item để hiện lên badge đỏ trên header
     const totalItems = useMemo(() => {
         if (!data?.getCart) return 0;
         return data.getCart.reduce((total, item) => total + (item.quantity || 1), 0);
@@ -37,7 +36,7 @@ function App() {
         await checkout({ variables: { ids } });
         alert("Thanh toán thành công!");
         refetch();
-        setIsCartOpen(false); // Đóng giỏ hàng sau khi thanh toán
+        setIsCartOpen(false);
     };
 
     return (
@@ -45,11 +44,12 @@ function App() {
             {/* --- HEADER --- */}
             <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 transition-all">
                 <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                    {/* --- CẬP NHẬT 1: ĐỔI TÊN THÀNH BIG BOSS E-COMMERCE --- */}
                     <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 tracking-tight">
-                        🛍️ <span className="text-blue-600">Fashion</span>Store
+                        🛍️ <span className="text-blue-600">Big Boss</span> E-Commerce
                     </h1>
 
-                    {/* Nút Giỏ Hàng Mới */}
+                    {/* Nút Giỏ Hàng */}
                     <button
                         onClick={() => setIsCartOpen(true)}
                         className="relative p-2 rounded-full hover:bg-gray-100 transition-colors group"
@@ -68,27 +68,24 @@ function App() {
                 </div>
             </header>
 
-            {/* --- MAIN CONTENT (Full Width) --- */}
+            {/* --- MAIN CONTENT --- */}
             <main className="max-w-7xl mx-auto p-4 sm:p-6">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-800">Khám phá bộ sưu tập</h2>
                     <p className="text-gray-500">Những mẫu thời trang mới nhất mùa hè này</p>
                 </div>
-                {/* ProductList bây giờ chiếm toàn bộ chiều rộng */}
+                {/* ProductList hiển thị danh sách sản phẩm */}
                 <ProductList />
             </main>
 
-            {/* --- CART DRAWER / OVERLAY (Phần mới) --- */}
-            {/* 1. Backdrop (Lớp nền đen mờ) */}
+            {/* --- CART DRAWER --- */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${isCartOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
                 onClick={() => setIsCartOpen(false)}
             ></div>
 
-            {/* 2. Drawer (Thanh trượt từ phải sang) */}
             <div className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
 
-                {/* Drawer Header */}
                 <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-white">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                         Giỏ hàng của bạn
@@ -104,7 +101,6 @@ function App() {
                     </button>
                 </div>
 
-                {/* Drawer Body (Chứa component Cart) */}
                 <div className="h-[calc(100vh-80px)] overflow-y-auto bg-gray-50 p-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center h-40 gap-3 text-gray-500">
@@ -116,8 +112,6 @@ function App() {
                             ⚠️ Có lỗi xảy ra khi tải giỏ hàng
                         </div>
                     ) : (
-                        // Component Cart từ thư viện
-                        // Lưu ý: Đảm bảo component Cart này responsive tốt trong container hẹp
                         <Cart
                             items={data.getCart || []}
                             onRemoveItem={handleRemove}
@@ -126,7 +120,6 @@ function App() {
                         />
                     )}
 
-                    {/* Empty State (Xử lý thêm nếu giỏ hàng rỗng & API trả về mảng rỗng) */}
                     {!loading && data?.getCart?.length === 0 && (
                         <div className="text-center py-10 opacity-60">
                             <span className="text-4xl block mb-2">🛒</span>

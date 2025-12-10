@@ -13,7 +13,7 @@ async function startServer() {
     await connectDB();
 
     // 2. Tạo dữ liệu mẫu (nếu chưa có)
-    await seedData();
+    await seedData();1
 
     // 3. Khởi tạo Apollo Server
     const server = new ApolloServer({ typeDefs, resolvers });
